@@ -96,10 +96,11 @@
       justify-content: center;
       box-shadow: 0 0 20px var(--primary-glow);
     }
-    .logo-icon svg {
-      width: 22px;
-      height: 22px;
-      fill: #ffffff;
+    .logo-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
     .logo-text {
       font-weight: 800;
@@ -458,21 +459,21 @@
   <div class="ambient-glow"></div>
 
   <!-- Header -->
-  <header>
-    <div class="container nav-inner">
-      <a href="#" class="logo-badge">
-        <div class="logo-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
-        </div>
-        <div class="logo-text">Vault<span>.</span></div>
-      </a>
-      <nav class="nav-links">
-        <a href="#features" class="nav-link">Özellikler</a>
-        <a href="#privacy" class="nav-link">Gizlilik</a>
-        <a href="mailto:nacionenkoprulu@gmail.com" class="btn-nav">İletişim</a>
-      </nav>
-    </div>
-  </header>
+<header>
+  <div class="container nav-inner">
+    <a href="#" class="logo-badge">
+      <div class="logo-icon">
+        <img src="assets/vault_logo.webp" alt="Vault Logo">
+      </div>
+      <div class="logo-text">Vault<span>.</span></div>
+    </a>
+    <nav class="nav-links">
+      <a href="#features" class="nav-link">Özellikler</a>
+      <a href="#privacy" class="nav-link">Gizlilik</a>
+      <a href="mailto:nacionenkoprulu@gmail.com" class="btn-nav">İletişim</a>
+    </nav>
+  </div>
+</header>
 
   <main class="container">
     <!-- Hero -->
