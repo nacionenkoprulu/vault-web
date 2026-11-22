@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vault — Sıfır Bilgi Şifre Yöneticisi</title>
+  <meta name="description" content="AES-256 şifrelemeli, kişisel Google Drive senkronizasyonlu, sıfır bilgi mimarili güvenli şifre yöneticisi.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --surface: #121620;
+      --surface-elevated: #181e2b;
+      --surface-border: rgba(255, 255, 255, 0.08);
+      --primary: #4f8cff;
+      --primary-glow: rgba(79, 140, 255, 0.25);
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.2);
+      --text: #f3f4f6;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Arka plan ışık efektleri */
+    .ambient-glow {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 500px;
+      background: radial-gradient(circle at 50% 20%, rgba(79, 140, 255, 0.15) 0%, rgba(16, 185, 129, 0.05) 45%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Navbar */
+    header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--surface-border);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(11, 13, 18, 0.85);
+    }
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #4f8cff, #2563eb);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+    .logo-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: #ffffff;
+    }
+    .logo-text {
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: -0.5px;
+    }
+    .logo-text span {
+      color: var(--primary);
+    }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-link:hover {
+      color: var(--text);
+    }
+    .btn-nav {
+      background: var(--surface-elevated);
+      border: 1px solid var(--surface-border);
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-nav:hover {
+      background: #1f2737;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 90px 0 60px;
+      text-align: center;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(79, 140, 255, 0.1);
+      border: 1px solid rgba(79, 140, 255, 0.25);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 24px;
+    }
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent);
+    }
+    h1 {
+      font-size: clamp(38px, 6vw, 64px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+    h1 .gradient {
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    h1 .highlight {
+      background: linear-gradient(135deg, #60a5fa, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-desc {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--text-muted);
+      max-width: 660px;
+      margin: 0 auto 36px;
+      line-height: 1.5;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 60px;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #ffffff;
+      padding: 14px 28px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 16px;
+      text-decoration: none;
+      box-shadow: 0 10px 30px var(--primary-glow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(79, 140, 255, 0.4);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface-elevated);
+      color: var(--text);
+      border: 1px solid var(--surface-border);
+      padding: 14px 28px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 16px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      background: #202838;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Live Interactive Interactive Vault Card */
+    .demo-wrapper {
+      max-width: 720px;
+      margin: 0 auto 100px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+      border: 1px solid var(--surface-border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .demo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--surface-border);
+      margin-bottom: 20px;
+    }
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      background: rgba(16, 185, 129, 0.1);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 600px) {
+      .demo-grid { grid-template-columns: 1fr; }
+    }
+    .vault-item {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .vault-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+    }
+    .vault-cipher {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-dim);
+      background: #090b0f;
+      padding: 8px 10px;
+      border-radius: 6px;
+      word-break: break-all;
+    }
+    .generator-box {
+      margin-top: 16px;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .generated-pass {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      color: #60a5fa;
+      letter-spacing: 1px;
+    }
+    .btn-gen {
+      background: rgba(79, 140, 255, 0.15);
+      color: var(--primary);
+      border: 1px solid rgba(79, 140, 255, 0.3);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-gen:hover {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    /* Features Grid */
+    .features {
+      padding: 60px 0 100px;
+    }
+    .section-title {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    .section-title h2 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+    }
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 17px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(79, 140, 255, 0.3);
+    }
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+    .card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #ffffff;
+    }
+    .card p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Privacy Section Embedded */
+    .privacy-section {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 20px;
+      padding: 40px;
+      margin: 40px 0 80px;
+    }
+    .privacy-section h2 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+    .privacy-section .subtitle {
+      color: var(--text-dim);
+      font-size: 14px;
+      margin-bottom: 24px;
+      display: block;
+    }
+    .privacy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .privacy-grid { grid-template-columns: 1fr; }
+    }
+    .privacy-item {
+      background: var(--surface-elevated);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .privacy-item h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #60a5fa;
+      margin-bottom: 8px;
+    }
+    .privacy-item p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--surface-border);
+      padding: 40px 0;
+      margin-top: auto;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    footer a:hover {
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-inner">
+      <a href="#" class="logo-badge">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        </div>
+        <div class="logo-text">Vault<span>.</span></div>
+      </a>
+      <nav class="nav-links">
+        <a href="#features" class="nav-link">Özellikler</a>
+        <a href="#privacy" class="nav-link">Gizlilik</a>
+        <a href="mailto:nacionenkoprulu@gmail.com" class="btn-nav">İletişim</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="pill">
+        <span class="pill-dot"></span>
+        Sıfır-Bilgi (Zero-Knowledge) Şifre Yöneticisi
+      </div>
+      <h1>
+        <span class="gradient">Şifreleriniz Yalnızca</span><br>
+        <span class="highlight">Sizin Gözleriniz İçin.</span>
+      </h1>
+      <p class="hero-desc">
+        Üçüncü taraf sunuculara elveda deyin. Şifrelerinizi askeri düzeyde AES-256 ile şifreleyin, kendi Google Drive'ınızda güvenle senkronize edin.
+      </p>
+      <div class="hero-actions">
+        <a href="#features" class="btn-primary">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+          Özellikleri İncele
+        </a>
+        <a href="#privacy" class="btn-secondary">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          Gizlilik İlkeleri
+        </a>
+      </div>
+
+      <!-- Live Mockup / Interactive Demo Card -->
+      <div class="demo-wrapper">
+        <div class="demo-header">
+          <div style="font-size: 13px; font-weight: 600; color: #ffffff;">🔒 Cihaz İçi Şifreleme Durumu</div>
+          <div class="status-badge">
+            <span>●</span> AES-256 ŞİFRELENDİ
+          </div>
+        </div>
+        <div class="demo-grid">
+          <div class="vault-item">
+            <div class="vault-title">
+              <span>Google Hesabı</span>
+              <span style="color: var(--accent); font-size: 12px;">Aktif</span>
+            </div>
+            <div class="vault-cipher">U2FsdGVkX19v8A+3ZkQ1x8P90A==</div>
+          </div>
+          <div class="vault-item">
+            <div class="vault-title">
+              <span>Kripto Cüzdanı</span>
+              <span style="color: var(--accent); font-size: 12px;">Aktif</span>
+            </div>
+            <div class="vault-cipher">U2FsdGVkX1+m4N9eK7x8B1lQ==</div>
+          </div>
+        </div>
+        <div class="generator-box">
+          <div>
+            <div style="font-size: 12px; color: var(--text-dim); text-align: left; margin-bottom: 4px;">Güvenli Şifre Üretici Simülatörü</div>
+            <div class="generated-pass" id="passDisplay">v8$kP#91mQ!zL@2w</div>
+          </div>
+          <button class="btn-gen" onclick="generateNewPass()">Yeni Üret ⚡</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+      <div class="section-title">
+        <h2>Güvenliğiniz İçin Tavizsiz Mimari</h2>
+        <p>Verileriniz hiçbir zaman geliştiriciye veya yabancı bir şirkete ait sunuculara uğramaz.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <h3>Sıfır Bilgi (Zero-Knowledge)</h3>
+          <p>Tüm verileriniz yalnızca sizin bildiğiniz Master Şifre ile cihazınızda şifrelenir. Biz dahil dünyadaki hiç kimse şifrelerinizi çözemez.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+          </div>
+          <h3>Kişisel Google Drive Senkronu</h3>
+          <p>Kasanız yabancı bir veritabanında değil, kendi Google Drive hesabınızdaki gizli <em>App Data</em> alanında şifreli olarak yedeklenir.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 004 11m0 0a8 8 0 00.99 7.132"/></svg>
+          </div>
+          <h3>Biyometrik Kilit & Ekran Koruması</h3>
+          <p>Parmak İzi / Yüz Tanıma ile tek dokunuşla açın. Son uygulamalar ekranında şifreler karartılır ve ekran görüntüsü alımı engellenir.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Embedded Privacy Policy Section (Google Play Console URL Uyumlu) -->
+    <section class="privacy-section" id="privacy">
+      <h2>Gizlilik İlkeleri ve Politikası</h2>
+      <span class="subtitle">Google Play Store & Kullanıcı Güvenlik Beyanı — Son Güncelleme: Kasım 2026</span>
+
+      <div class="privacy-grid">
+        <div class="privacy-item">
+          <h4>1. Verilerin Şifrelenmesi</h4>
+          <p>Kasanıza eklediğiniz tüm şifreler ve notlar AES-256 standardı ile cihazınızda şifrelenir. Şifreler cihazdan şifresiz asla çıkmaz.</p>
+        </div>
+        <div class="privacy-item">
+          <h4>2. Google Drive Senkronizasyonu</h4>
+          <p>Yedekler Google Drive'ın gizli App Data klasöründe şifreli tutulur. Google veya geliştirici bu verilere erişemez.</p>
+        </div>
+        <div class="privacy-item">
+          <h4>3. Sıfır Veri Toplama</h4>
+          <p>Vault hiçbir kişisel veri, kullanım analitiği, reklam veya hata takipçisi toplamaz. Sıfır izleme garantisi sunar.</p>
+        </div>
+        <div class="privacy-item">
+          <h4>4. İzinler ve İletişim</h4>
+          <p>Yalnızca internet (Drive sync) ve opsiyonel biyometri izni kullanılır. İletişim: <strong>nacionenkoprulu@gmail.com</strong></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 Vault — Naci Önenköprülü. Tüm hakları saklıdır.</p>
+      <p style="margin-top: 8px;">
+        <a href="#privacy">Gizlilik Politikası</a> &bull;
+        <a href="mailto:nacionenkoprulu@gmail.com">Destek & Geri Bildirim</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Canlı Şifre Jeneratör Simülasyonu
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%^&*';
+    function generateNewPass() {
+      let pass = '';
+      for (let i = 0; i < 16; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      document.getElementById('passDisplay').innerText = pass;
+    }
+  </script>
+</body>
+</html>
+
