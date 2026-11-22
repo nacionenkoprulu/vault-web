@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gizlilik Politikası - Vault</title>
+  <style>
+    :root {
+      --bg-color: #111317;
+      --card-bg: #1a1d24;
+      --primary: #4e8cff;
+      --text: #e6e8eb;
+      --text-muted: #9ba1a6;
+      --border: #2d3139;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 760px;
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    @media (min-width: 600px) {
+      body { padding: 48px 24px; }
+      .container { padding: 48px 40px; }
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(78, 140, 255, 0.12);
+      color: var(--primary);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    .date {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      display: block;
+    }
+    h2 {
+      font-size: 19px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-top: 28px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+    }
+    p {
+      margin-bottom: 14px;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+    ul {
+      margin-left: 20px;
+      margin-bottom: 16px;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+    li { margin-bottom: 6px; }
+    strong { color: var(--text); }
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <span class="badge">Vault Güvenlik ve Gizlilik</span>
+    <h1>Gizlilik Politikası</h1>
+    <span class="date">Son Güncelleme: Kasım 2026</span>
+
+    <p>
+      <strong>Vault</strong>, kullanıcıların güvenliğini ve gizliliğini en üst düzeyde tutmak amacıyla <strong>"Sıfır Bilgi" (Zero-Knowledge)</strong> mimarisiyle tasarlanmıştır. Bu gizlilik politikası, verilerinizin nasıl işlendiğini ve korunduğunu açıklar.
+    </p>
+
+    <h2>1. Verilerin Şifrelenmesi (Zero-Knowledge)</h2>
+    <p>
+      Kasanıza eklediğiniz tüm şifreler, notlar ve hesap bilgileri cihazınızdan ayrılmadan önce endüstri standardı olan <strong>AES-256 bit</strong> şifreleme algoritması ile şifrelenir. Şifreleme işlemi yalnızca sizin belirlediğiniz ve bildiğiniz <strong>Master Şifre</strong> ile yapılır.
+    </p>
+
+    <h2>2. Bulut Senkronizasyonu (Google Drive)</h2>
+    <p>
+      Vault, verilerinizi yedeklemek ve cihazlar arası senkronize etmek için kişisel <strong>Google Drive</strong> hesabınızı kullanır:
+    </p>
+    <ul>
+      <li>Verileriniz Google Drive'daki yalnızca uygulamaya özel gizli <em>"Uygulama Verileri" (App Data Folder)</em> klasöründe saklanır.</li>
+      <li>Veriler cihazınızdan çıkmadan önce şifrelendiği için, Google veya Vault geliştiricileri dâhil hiç kimse şifrelerinizi ve içeriklerinizi çözemez veya görüntüleyemez.</li>
+    </ul>
+
+    <h2>3. Veri Toplama ve Analitik</h2>
+    <p>
+      Vault uygulaması:
+    </p>
+    <ul>
+      <li>Hiçbir kişisel veri, kullanım istatistiği, kimlik bilgisi veya konum verisi <strong>toplamaz</strong>.</li>
+      <li>Uygulama içinde herhangi bir reklam ağı, izleme modülü (tracker) veya üçüncü taraf analitik aracı <strong>bulunmaz</strong>.</li>
+      <li>Tüm verileriniz yalnızca size ve bağladığınız kişisel Google Drive hesabınıza aittir.</li>
+    </ul>
+
+    <h2>4. Master Şifre Sorumluluğu</h2>
+    <p>
+      Sıfır bilgi mimarisinin doğası gereği, geliştiricinin şifrelerinizi kurtarma veya sıfırlama gibi bir arka kapısı (backdoor) yoktur. Master şifrenizi unutmanız durumunda, cihazınızdaki ve Google Drive'daki şifreli verilerinize erişim imkânsız hale gelir.
+    </p>
+
+    <h2>5. Uygulama İzinleri</h2>
+    <ul>
+      <li><strong>İnternet Erişimi:</strong> Yalnızca Google Drive ile şifreli yedeklerin senkronizasyonu için kullanılır.</li>
+      <li><strong>Biyometrik Kimlik Doğrulama:</strong> Cihazınızın yerel parmak izi veya yüz tanıma API'si ile çalışır; biyometrik verileriniz cihaz dışına asla aktarılmaz.</li>
+      <li><strong>Ekran Koruması (FLAG_SECURE):</strong> Uygulama arka plana geçtiğinde şifrelerinizin son uygulamalar ekranında görünmesini ve ekran görüntüsü alınmasını engellemek için kullanılır.</li>
+    </ul>
+
+    <h2>6. İletişim</h2>
+    <p>
+      Gizlilik politikası veya uygulama ile ilgili her türlü soru ve geri bildiriminiz için bizimle iletişime geçebilirsiniz:
+      <br>
+      <strong>E-posta:</strong> <a href="mailto:nacionenkoprulu@gmail.com">nacionenkoprulu@gmail.com</a>
+    </p>
+
+    <div class="footer">
+      &copy; 2026 Vault. Tüm hakları saklıdır.
+    </div>
+  </main>
+</body>
+</html>
+
